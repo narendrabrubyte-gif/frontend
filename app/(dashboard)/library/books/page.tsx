@@ -1,27 +1,28 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import toast from "react-hot-toast";
+import { BookOpen } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface Book {
-  id: string;
+  book_id: string;
   title: string;
-  bookClass: string;
+  book_class: string;
   total_quantity: number;
-  available_quantity: number;
   status: string;
 }
 
 export default function BooksPage() {
+
   const router = useRouter();
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const [books,setBooks] = useState<Book[]>([]);
+  const [loading,setLoading] = useState(false);
 
   const fetchBooks = async () => {
+    setLoading(true);
     try {
       const res = await api.get("/library/books");
       setBooks(Array.isArray(res.data) ? res.data : []);
@@ -36,90 +37,57 @@ export default function BooksPage() {
     fetchBooks();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this book?")) return;
-
-    try {
-      await api.delete(`/library/books/${id}`);
-      toast.success("Deleted");
-      fetchBooks();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Delete failed");
-    }
-  };
-
-  if (loading)
-    return <div className="p-6 text-lg font-semibold">Loading books...</div>;
-
   return (
-    <div className="p-6 text-black">
-
-      {/* HEADER */}
+    <div className="p-6">
       <div className="flex justify-between mb-6">
+        <h1 className="text-2xl font-bold flex items-center gap-2 text-black">
+          <BookOpen size={22}/>
+          Library Books
+        </h1>
 
-        {/* LEFT SIDE (Back + Title) */}
-        <div className="flex items-center gap-5 bg-blue-600 p-2 rounded">
-          <button
-            onClick={() => router.back()}
-            className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
-          >
-            ← Back
-          </button>
-
-          <h1 className="text-2xl font-bold">Books</h1>
-        </div>
-
-        {/* RIGHT SIDE */}
         <button
           onClick={() => router.push("/library/books/add")}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-        >
+          className="bg-purple-600 text-white px-4 py-2 rounded"        >
           + Add Book
         </button>
       </div>
 
-      {/* TABLE */}
-      <div className="overflow-auto border rounded-lg">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-2 border text-lg">Title</th>
-              <th className="p-2 border text-lg">Class</th>
-              <th className="p-2 border text-lg">Total</th>
-              <th className="p-2 border text-lg">Status</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {books.length === 0 ? (
+      <div className="bg-white shadow rounded overflow-hidden">
+        {loading ? (
+          <div className="p-10 text-center">
+            Loading books...
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead className="bg-purple-50 text-black">
               <tr>
-                <td colSpan={4} className="text-center p-4">
-                  No books found
-                </td>
+                <th className="p-4 text-left">Title</th>
+                <th className="p-4 text-left">class</th>
+                <th className="p-4 text-left">Quantity</th>
+                <th className="p-4 text-left">Status</th>
               </tr>
-            ) : (
-              books.map((b) => (
-                <tr key={b.id} className="text-center hover:bg-gray-50">
-                  <td className="border p-2">{b.title}</td>
-                  <td className="border p-2">{b.bookClass}</td>
-                  <td className="border p-2">{b.total_quantity}</td>
-
-                  <td className="border p-2">
+            </thead>
+            <tbody>
+              {books.map((b) => (
+                <tr key={b.book_id} className="border-b text-black">
+                  <td className="p-4">{b.title}</td>
+                  <td className="p-4">{b.book_class}</td>
+                  <td className="p-4">{b.total_quantity}</td>
+                  <td className="p-4">
                     <span
-                      className={`px-2 py-1 rounded text-xs font-semibold ${
-                        b.status === "available"
-                          ? "bg-green-200"
-                          : "bg-red-200"
-                      }`}
-                    >
+                      className={`px-2 py-1 rounded text-xs font-semibold text-black ${
+                        b.status === "AVAILABLE"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}                   >
                       {b.status}
                     </span>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

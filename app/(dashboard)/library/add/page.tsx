@@ -1,143 +1,138 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect,useState } from "react";
 import api from "@/lib/axios";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import LibrarySidebar from "../components/LibrarySidebar";
 
-interface Book {
-  id: string;
-  title: string;
+export default function AddRecord(){
+
+const router = useRouter();
+
+const [students,setStudents] = useState<any[]>([]);
+const [books,setBooks] = useState<any[]>([]);
+
+const [form,setForm] = useState({
+student_id:"",
+book_id:""
+})
+
+const load = async()=>{
+
+try{
+
+const s = await api.get("/students")
+const b = await api.get("/library/books")
+
+setStudents(Array.isArray(s.data) ? s.data : s.data.data || [])
+setBooks(Array.isArray(b.data) ? b.data : b.data.data || [])
+
 }
 
-interface Student {
-  student_id: string;
-  first_name: string;
-  last_name: string;
+catch{
+
+toast.error("Failed to load data")
+
 }
 
-export default function AddRecord() {
-  const router = useRouter();
+}
 
-  const [books, setBooks] = useState<Book[]>([]);
-  const [students, setStudents] = useState<Student[]>([]);
+useEffect(()=>{
+load()
+},[])
 
-  const [form, setForm] = useState({
-    bookId: "",
-    studentId: "",
-  });
+const submit = async(e:any)=>{
 
-  // FETCH DATA
-  const fetchData = async () => {
-    try {
-      const bookRes = await api.get("/library/books");
-      const studentRes = await api.get("/students");
+e.preventDefault()
 
-      const bookList =
-        bookRes.data?.data ||
-        bookRes.data?.books ||
-        bookRes.data;
+if(!form.student_id || !form.book_id){
 
-      const studentList =
-        studentRes.data?.data ||
-        studentRes.data?.students ||
-        studentRes.data;
+toast.error("Select student and book")
+return
 
-      setBooks(Array.isArray(bookList) ? bookList : []);
-      setStudents(Array.isArray(studentList) ? studentList : []);
+}
 
-    } catch (err) {
-      console.log(err);
-      toast.error("Failed loading dropdown data");
-    }
-  };
+try{
 
-  useEffect(() => {
-    const fetch = async () => {
-      await fetchData();
-    };
-    fetch();
-  }, []);
+console.log("Sending Data:",form)
 
-  // SUBMIT
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+await api.post("/library/assign",form)
 
-    if (!form.bookId || !form.studentId)
-      return toast.error("Select book & student");
+toast.success("Book Assigned Successfully")
 
-    try {
-      await api.post("/library/assign", {
-        bookId: form.bookId,
-        studentId: form.studentId,
-      });
+router.push("/library")
 
-      toast.success("Book Assigned Successfully");
-      router.push("/library");
+}
 
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      console.log(error.response?.data);
-      toast.error(error.response?.data?.message || "Assign failed");
-    }
-  };
+catch(err:any){
 
-  return (
-    <div className="flex">
-      <LibrarySidebar />
+console.log(err.response?.data)
 
-      <div className="p-6 max-w-lg mx-auto w-full text-black">
-        <h1 className="text-2xl font-bold mb-6">Add Record</h1>
+toast.error("Failed to assign book")
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+}
 
-          {/* BOOK DROPDOWN */}
-          <select
-            value={form.bookId}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                bookId: e.target.value,
-              }))
-            }
-            className="w-full border p-3 rounded"
-          >
-            <option value="">Select Book</option>
+}
 
-            {books.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.title}
-              </option>
-            ))}
-          </select>
+return(
 
-          {/* STUDENT DROPDOWN */}
-          <select
-            value={form.studentId}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                studentId: e.target.value,
-              }))
-            }
-            className="w-full border p-3 rounded"
-          >
-            <option value="">Select Student</option>
+<div className="flex">
 
-            {students.map((s) => (
-              <option key={s.student_id} value={s.student_id}>
-                {s.first_name} {s.last_name}
-              </option>
-            ))}
-          </select>
+<LibrarySidebar/>
 
-          <button className="bg-blue-600 text-white w-full p-3 rounded hover:bg-blue-700">
-            Save Record
-          </button>
+<div className="p-6 max-w-lg mx-auto w-full text-black">
 
-        </form>
-      </div>
-    </div>
-  );
+<h1 className="text-2xl font-bold mb-6">
+Assign Book
+</h1>
+
+<form onSubmit={submit} className="space-y-4">
+
+<select
+value={form.student_id}
+onChange={(e)=>setForm({...form,student_id:e.target.value})}
+className="w-full border p-3 rounded"
+>
+
+<option value="">Select Student</option>
+
+{students.map((s:any)=>(
+<option key={s.student_id} value={s.student_id}>
+{s.first_name} {s.last_name}
+</option>
+))}
+
+</select>
+
+<select
+value={form.book_id}
+onChange={(e)=>setForm({...form,book_id:e.target.value})}
+className="w-full border p-3 rounded"
+>
+
+<option value="">Select Book</option>
+
+{books.map((b:any)=>(
+<option key={b.book_id} value={b.book_id}>
+{b.title}
+</option>
+))}
+
+</select>
+
+<button className="bg-blue-600 text-white w-full p-3 rounded">
+Assign Book
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+)
+
 }
