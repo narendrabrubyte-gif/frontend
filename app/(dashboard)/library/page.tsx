@@ -12,12 +12,17 @@ interface RecordType {
   issued_on: string;
   returned_on?: string;
   status: string;
+
   student?: {
     student_id: string;
     first_name: string;
     last_name: string;
   };
-  book_title?: string;
+
+  book?: {
+    book_id: string;
+    title: string;
+  };
 }
 
 export default function LibraryRecordsPage() {
@@ -59,9 +64,9 @@ export default function LibraryRecordsPage() {
   }
 
   const filtered = records.filter((r)=>
-    r.student?.first_name?.toLowerCase().includes(search.toLowerCase()) ||
-    r.book_title?.toLowerCase().includes(search.toLowerCase())
-  )
+  r.student?.first_name?.toLowerCase().includes(search.toLowerCase()) ||
+  r.book?.title?.toLowerCase().includes(search.toLowerCase())
+)
 
   const totalPages = Math.ceil(filtered.length/limit);
   const start = (page-1)*limit;
@@ -136,16 +141,17 @@ export default function LibraryRecordsPage() {
   {r.student?.first_name} {r.student?.last_name}
   </td>
 
-  <td className="border p-2">
-  {r.book_title}
-  </td>
-
+ <td className="border p-2">
+  {r.book?.title || "No Book"}
+</td>
   <td className="border p-2">
   {new Date(r.issued_on).toLocaleDateString()}
   </td>
 
   <td className="border p-2">
-  {r.returned_on ? new Date(r.returned_on).toLocaleDateString() : "Not Returned"}
+   {r.returned_on
+   ? new Date(r.returned_on).toLocaleDateString()
+   : "Not Returned"}
   </td>
 
   <td className="border p-2">

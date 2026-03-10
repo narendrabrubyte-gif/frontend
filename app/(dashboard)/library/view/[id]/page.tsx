@@ -20,7 +20,8 @@ export default function ViewRecordPage() {
     const load = async () => {
       try {
         const res = await api.get(`/library/records/${id}`);
-        setRecord(res.data);
+        console.log(res.data)
+       setRecord(res.data);
       } catch (err) {
         toast.error("Failed to load record");
       } finally {
@@ -43,15 +44,15 @@ export default function ViewRecordPage() {
 
         <p><b>Student:</b> {record.student?.first_name} {record.student?.last_name}</p>
 
-        <p><b>Book:</b> {record.book?.title}</p>
+        <p><b>Book:</b> {record?.book?.title || "No Book"}</p>
 
         <p><b>Status:</b> {record.status}</p>
 
         <p>
           <b>Issue Date:</b>{" "}
-          {record.issuedAt
-            ? new Date(record.issuedAt).toLocaleDateString()
-            : "N/A"}
+         {record.issued_on
+           ? new Date(record.issued_on).toLocaleDateString()
+          : "N/A"}
         </p>
 
       </div>

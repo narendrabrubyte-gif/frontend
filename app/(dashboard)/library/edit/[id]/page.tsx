@@ -13,7 +13,7 @@ interface Student {
 }
 
 interface Book {
-  id: string;
+  book_id: string;
   title: string;
 }
 
@@ -58,10 +58,11 @@ export default function EditRecordPage() {
         setBooks(extractArray(bookRes.data));
 
         setForm({
-          studentId: record?.student?.student_id ?? "",
-          bookId: record?.book?.id ?? "",
-          status: record?.status ?? "ISSUED"
-        });
+  studentId: record?.student?.student_id || "",
+  bookId: record?.book?.book_id || "",
+  status: record?.status || "ISSUED"
+});console.log("record", record);
+console.log("books", bookRes.data);
 
       } catch (err) {
         console.log(err);
@@ -85,12 +86,11 @@ export default function EditRecordPage() {
     e.preventDefault();
 
     try {
-      await api.patch(`/library/records/${id}`, {
-  studentId: form.studentId,
-  bookId: form.bookId,
+     await api.patch(`/library/records/${id}`, {
+  student_id: form.studentId,
+  book_id: form.bookId,
   status: form.status
 });
-
       toast.success("Record Updated Successfully");
       router.push("/library");
 
@@ -143,11 +143,11 @@ export default function EditRecordPage() {
           >
             <option value="">Select Book</option>
 
-            {books.map(b => (
-              <option key={b.id} value={b.id}>
-                {b.title}
-              </option>
-            ))}
+          {books.map(b => (
+            <option key={b.book_id} value={b.book_id}>
+          {b.title}
+        </option>
+))}
           </select>
         </div>
 
