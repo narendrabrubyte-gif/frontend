@@ -41,7 +41,7 @@ export default function ViewRecordPage() {
       <h1 className="text-2xl font-bold">Record Details</h1>
 
       <div className="border p-4 rounded space-y-2">
-
+ 
         <p><b>Student:</b> {record.student?.first_name} {record.student?.last_name}</p>
 
         <p><b>Book:</b> {record?.book?.title || "No Book"}</p>
