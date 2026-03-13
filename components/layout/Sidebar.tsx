@@ -10,6 +10,7 @@ import {
   UserPlus,
   CalendarCheck,
   GraduationCap,
+  School,
 } from "lucide-react";
 import Cookies from "js-cookie";
 
@@ -20,6 +21,7 @@ const menuItems = [
   { name: "Marks", href: "/marks", icon: GraduationCap },
   { name: "Students", href: "/students", icon: Users },
   { name: "Courses", href: "/courses", icon: BookOpen },
+  { name: "Classes", href: "/classes", icon: School },
   { name: "Library", href: "/library", icon: BookOpen },
 ];
 export default function Sidebar() {
