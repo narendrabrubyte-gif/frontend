@@ -25,6 +25,7 @@ try{
 
 const res = await api.get("/classes/records")
    setRecords(res.data ?? [])
+   console.log(res.data);
 }
 
 catch{
@@ -38,20 +39,16 @@ fetchRecords()
 
 return( 
       <div className="flex">
-
 <ClassSidebar/>
-
-<div className="flex-1 p-6 text-black">
-
-<div className="flex justify-between mb-5">
-
-<h1 className="text-2xl font-bold">
-Class Records
+     <div className="flex-1 p-6 text-black">
+     <div className="flex justify-between mb-5">
+     <h1 className="text-2xl font-bold">
+     Class Records
 </h1>
 
 <button
-onClick={()=>router.push("/classes/records/add")}
-className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+     onClick={()=>router.push("/classes/records/add")}
+     className="bg-blue-600 text-white px-4 py-2 rounded-lg"
 >
 + Add Record
 </button>
@@ -59,7 +56,6 @@ className="bg-blue-600 text-white px-4 py-2 rounded-lg"
 </div>
 
 <table className="w-full border">
-
 <thead className="bg-gray-100">
 
 <tr>
@@ -90,9 +86,8 @@ records.map((r)=>(
 </td>
 
 <td className="border p-2">
-{r.class?.class}
+ {r.class?.name} {r.class?.class}
 </td>
-
 </tr>
 
 ))
