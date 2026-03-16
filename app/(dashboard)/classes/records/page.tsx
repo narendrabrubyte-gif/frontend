@@ -7,49 +7,37 @@ import { useRouter } from "next/navigation";
 import ClassSidebar from "../components/ClassSidebar";
 
 interface RecordType{
-
 record_id:string
 
 student:{
 first_name:string
 last_name:string
 }
-
 class:number
-
 }
 
 export default function ClassRecords(){
-
 const router = useRouter()
-
 const [records,setRecords] = useState<RecordType[]>([])
-
 const fetchRecords = async()=>{
 
 try{
 
-const res = await api.get("/class-records")
-
-setRecords(res.data ?? [])
-
+const res = await api.get("/classes/records")
+   setRecords(res.data ?? [])
 }
 
 catch{
-
 toast.error("Failed to load records")
-
 }
-
 }
 
 useEffect(()=>{
 fetchRecords()
 },[])
 
-return(
-
-<div className="flex">
+return( 
+      <div className="flex">
 
 <ClassSidebar/>
 
@@ -102,7 +90,7 @@ records.map((r)=>(
 </td>
 
 <td className="border p-2">
-{r.class}
+{r.class?.class}
 </td>
 
 </tr>
@@ -118,7 +106,5 @@ records.map((r)=>(
 </div>
 
 </div>
-
 )
-
 }

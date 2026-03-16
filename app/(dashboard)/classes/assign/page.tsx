@@ -6,13 +6,11 @@ import api from "@/lib/axios";
 export default function AssignStudent() {
   const [studentId, setStudentId] = useState("");
   const [classId, setClassId] = useState("");
-
   const assignStudent = async () => {
     await api.post("/classes/assign", {
       student_id: studentId,
       class_id: classId,
     });
-
     alert("Student Assigned");
   };
 
